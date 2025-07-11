@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Foundation & Concealer Recommendations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        input[type="file"], select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #444;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .card {
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .recommendation-item {
+            background: #fff;
+            border-left: 4px solid #666;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .flash-messages {
+            margin-top: 20px;
+            background: #ffe6ea;
+            border: 1px solid #f5c2c7;
+            border-radius: 8px;
+            padding: 10px;
+            color: #b02a37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Foundation & Concealer Recommender</h1>
+        <form method="post" enctype="multipart/form-data">
+            <label>Select Mode:</label>
+            <label><input type="radio" name="mode" value="image" checked> Analyze selfie</label>
+            <label><input type="radio" name="mode" value="manual"> I know my skin type</label>
+
+            <div id="image-fields">
+                <label for="image">Upload a clear selfie (JPEG or PNG):</label>
+                <input type="file" name="image" accept="image/*">
+            </div>
+
+            <div id="manual-fields" style="display: none;">
+                <label>Skin Tone:</label>
+                <select name="skin_tone">
+                    <option value="Light">Light</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Medium-dark">Medium-dark</option>
+                    <option value="Dark">Dark</option>
+                </select>
+
+                <label>Undertone:</label>
+                <select name="undertone">
+                    <option value="Cool">Cool</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Warm">Warm</option>
+                </select>
+
+                <label>Skin Type:</label>
+                <select name="skin_type">
+                    <option value="Oily">Oily</option>
+                    <option value="Dry">Dry</option>
+                    <option value="Combination">Combination</option>
+                    <option value="Normal">Normal</option>
+                </select>
+            </div>
+
+            <button type="submit">Get Recommendations</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if recommendation %}<div class="card">
+            <h3>Detected Skin Information</h3>
+            <p><strong>Skin Tone:</strong> {{ recommendation.skin_tone_detected }}</p>
+            <p><strong>Undertone:</strong> {{ recommendation.undertone_detected }}</p>
+            <p><strong>Skin Type:</strong> {{ recommendation.skin_type_detected }}</p>
+
+            <h3>Foundation Recommendations</h3>
+            {% for item in recommendation.recommended_foundations %}
+            <div class="recommendation-item">
+                <p><strong>{{ item.product }}</strong></p>
+                <p>{{ item.reason }}</p>
+            </div>
+            {% endfor %}
+
+            <h3>Concealer Recommendations</h3>
+            {% for item in recommendation.recommended_concealers %}
+            <div class="recommendation-item">
+                <p><strong>{{ item.product }}</strong></p>
+                <p>{{ item.reason }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% elif raw_result %}
+        <div class="card">
+            <h3>Raw Output</h3>
+            <pre>{{ raw_result }}</pre>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const modeRadios = document.getElementsByName('mode');
+        const manualFields = document.getElementById('manual-fields');
+        const imageFields = document.getElementById('image-fields');
+
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'manual') {
+                    manualFields.style.display = 'block';
+                    imageFields.style.display = 'none';
+                } else {
+                    manualFields.style.display = 'none';
+                    imageFields.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
