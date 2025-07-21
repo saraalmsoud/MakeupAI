@@ -7,7 +7,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import base64
 
-# تحميل المتغيرات من .env
 load_dotenv()
 
 app = Flask(__name__)
@@ -15,10 +14,8 @@ app.secret_key = 'supersecretkey'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# تهيئة OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# رفع الصورة إلى imgbb
 def upload_to_imgbb(image_bytes):
     API_KEY = os.getenv("IMGBB_API_KEY")
     encoded_image = base64.b64encode(image_bytes).decode("utf-8")
