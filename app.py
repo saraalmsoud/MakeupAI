@@ -67,7 +67,7 @@ def index():
 
                 image_url = upload_to_imgbb(image_bytes)
 
-                # استدعاء GPT
+
                 completion = client.chat.completions.create(
                     model="gpt-4-turbo",
                     messages=[
